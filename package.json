@@ -8,12 +8,14 @@
     "start": "next start",
     "lint": "eslint",
     "dev-with-cron": "bun server.js",
-    "dev-custom": "node server.js"
+    "dev-custom": "node server.js",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.23",
     "@ai-sdk/openai-compatible": "^1.0.22",
     "@openrouter/ai-sdk-provider": "^1.2.0",
+    "@prisma/client": "^6.17.1",
     "@radix-ui/react-slot": "^1.2.3",
     "ai": "^5.0.76",
     "ccxt": "^4.5.11",
@@ -41,7 +43,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@prisma/client": "^6.17.1",
     "@tailwindcss/postcss": "^4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",

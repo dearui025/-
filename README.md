@@ -205,6 +205,45 @@ To upload this project to your GitHub repository:
 
 Alternatively, follow the manual instructions in [GITHUB_UPLOAD_INSTRUCTIONS.md](GITHUB_UPLOAD_INSTRUCTIONS.md)
 
+## ☁️ Deploying to Supabase
+
+To deploy this project to Supabase:
+
+1. **Create a Supabase project**
+   - Go to [Supabase](https://supabase.com/) and create a new project
+   - Note your project URL and database credentials
+
+2. **Configure environment variables**
+   - Copy `.env.supabase` to `.env.production`
+   - Update the values with your actual credentials:
+     ```env
+     DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres"
+     NEXT_PUBLIC_URL="https://[YOUR-PROJECT-REF].supabase.co"
+     DEEPSEEK_API_KEY="your_actual_deepseek_api_key"
+     # ... other variables
+     ```
+
+3. **Prepare the database**
+   ```bash
+   # Install dependencies
+   bun install
+   
+   # Generate Prisma client
+   bunx prisma generate
+   
+   # Run database migrations
+   bunx prisma migrate dev --name init
+   ```
+
+4. **Build the project**
+   ```bash
+   bun run build
+   ```
+
+5. **Deploy using your preferred method**
+   - You can deploy to Vercel, Netlify, or other platforms that support Next.js
+   - Make sure to set the environment variables in your deployment platform
+
 ## ⚠️ Disclaimer
 
 **This is educational/research software. Trading cryptocurrencies involves substantial risk of loss.**
