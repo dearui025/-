@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev-with-cron": "bun server.js",
+    "dev-custom": "node server.js"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.23",

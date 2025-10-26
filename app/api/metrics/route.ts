@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { ModelType } from "@prisma/client";
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 // 最大返回数据点数量
 const MAX_DATA_POINTS = 50;
@@ -29,11 +31,30 @@ function uniformSample<T>(data: T[], sampleSize: number): T[] {
 
 export const GET = async () => {
   try {
-    const metrics = await prisma.metrics.findFirst({
-      where: {
-        model: ModelType.Deepseek,
-      },
-    });
+    // 检查是否存在测试数据文件
+    const testMetricsPath = path.join(process.cwd(), 'prisma', 'test-metrics.json');
+    let metrics;
+    
+    try {
+      if (fs.existsSync(testMetricsPath)) {
+        const testMetricsData = JSON.parse(fs.readFileSync(testMetricsPath, 'utf8'));
+        metrics = testMetricsData;
+        console.log('Using test metrics data');
+      } else {
+        metrics = await prisma.metrics.findFirst({
+          where: {
+            model: ModelType.Deepseek,
+          },
+        });
+      }
+    } catch (error) {
+      console.log('Error reading test metrics, falling back to database');
+      metrics = await prisma.metrics.findFirst({
+        where: {
+          model: ModelType.Deepseek,
+        },
+      });
+    }
 
     if (!metrics) {
       return NextResponse.json({
@@ -55,14 +76,47 @@ export const GET = async () => {
       databaseMetrics = [];
     }
 
-    const metricsData = databaseMetrics
-      .map((item: any) => {
-        return {
-          ...item.accountInformationAndPerformance,
-          createdAt: item?.createdAt || new Date().toISOString(),
-        };
-      })
-      .filter((item: any) => (item as any).availableCash > 0);
+    // 处理数据，确保格式正确
+    const processedMetrics = databaseMetrics.map((item: any) => {
+      // 正确映射数据结构，确保所有字段都在顶层
+      const mappedItem = {
+        ...item.accountInformationAndPerformance,
+        createdAt: item?.createdAt || new Date().toISOString(),
+      };
+      
+      // 确保 positions 字段是数组
+      if (typeof mappedItem.positions === 'string') {
+        try {
+          mappedItem.positions = JSON.parse(mappedItem.positions);
+        } catch (e) {
+          mappedItem.positions = [];
+        }
+      }
+      
+      // 确保所有数值字段都是数字类型
+      mappedItem.totalCashValue = Number(mappedItem.totalCashValue);
+      mappedItem.availableCash = Number(mappedItem.availableCash);
+      mappedItem.currentTotalReturn = Number(mappedItem.currentTotalReturn);
+      mappedItem.currentPositionsValue = Number(mappedItem.currentPositionsValue);
+      mappedItem.contractValue = Number(mappedItem.contractValue);
+      mappedItem.sharpeRatio = Number(mappedItem.sharpeRatio);
+      
+      return mappedItem;
+    });
+
+    // 过滤掉无效数据，但放宽条件
+    const metricsData = processedMetrics.filter((item: any) => {
+      // 检查必要字段是否存在且有效
+      const hasValidData = (
+        typeof item.totalCashValue === 'number' && 
+        !isNaN(item.totalCashValue) && 
+        isFinite(item.totalCashValue) &&
+        item.createdAt
+      );
+      
+      // 如果availableCash <= 0，我们仍然保留数据，因为这可能是有效的交易状态
+      return hasValidData;
+    });
 
     // 均匀采样数据，最多返回 MAX_DATA_POINTS 条
     const sampledMetrics = uniformSample(metricsData, MAX_DATA_POINTS);

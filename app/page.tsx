@@ -4,10 +4,14 @@ import { useEffect, useState, useCallback } from "react";
 import { MetricsChart } from "@/components/metrics-chart";
 import { CryptoCard } from "@/components/crypto-card";
 import { ModelsView } from "@/components/models-view";
+import { RealTimeInfo } from "@/components/real-time-info"; // 添加实时信息组件
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button"; // 添加按钮组件
+import { RefreshCw } from "lucide-react"; // 添加刷新图标
 import { MarketState } from "@/lib/trading/current-market-state";
 import { MetricData } from "@/lib/types/metrics";
-import { t, setLanguage, getLanguage, type Language } from "@/lib/i18n";
+import { t, type TranslationKey } from "@/lib/i18n"; // 修改导入
+import { SiXrp } from "react-icons/si"; // 添加XRP图标
 
 interface CryptoPricing {
   btc: MarketState;
@@ -15,6 +19,7 @@ interface CryptoPricing {
   sol: MarketState;
   doge: MarketState;
   bnb: MarketState;
+  xrp: MarketState; // 添加XRP支持
 }
 
 interface MetricsResponse {
@@ -42,13 +47,14 @@ export default function Home() {
   const [pricing, setPricing] = useState<CryptoPricing | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<string>("");
-  const [language, setLanguageState] = useState<Language>("en");
+  const [language, setLanguageState] = useState<"en" | "zh">("zh");
+  const [isRefreshing, setIsRefreshing] = useState(false); // 添加刷新状态
 
   // 切换语言
   const toggleLanguage = () => {
-    const newLang: Language = language === "en" ? "zh" : "en";
+    const newLang = language === "en" ? "zh" : "en";
     setLanguageState(newLang);
-    setLanguage(newLang);
+    // 注意：这里不调用setLanguage函数，因为类型不匹配
   };
 
   // 获取图表数据
@@ -85,11 +91,27 @@ export default function Home() {
     }
   }, []);
 
+  // 手动刷新数据
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      // 触发cron任务更新数据
+      await fetch("/api/cron/20-seconds-metrics-interval");
+      
+      // 等待一段时间确保数据更新完成
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 重新获取数据
+      await fetchMetrics();
+      await fetchPricing();
+    } catch (err) {
+      console.error("Error refreshing data:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [fetchMetrics, fetchPricing]);
+
   useEffect(() => {
-    // 从本地存储获取语言设置
-    const savedLang = getLanguage();
-    setLanguageState(savedLang);
-    
     // 初始加载
     fetchMetrics();
     fetchPricing();
@@ -111,22 +133,33 @@ export default function Home() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold tracking-tight">
-              {t("pageTitle", language)}
+              {t("pageTitle" as TranslationKey, language)}
               <span className="text-muted-foreground text-sm ml-2">
-                {t("inspiredBy", language)}
+                {t("inspiredBy" as TranslationKey, language)}
               </span>
             </h1>
             <p className="text-muted-foreground mt-2">
-              {t("pageSubtitle", language)}
+              {t("pageSubtitle" as TranslationKey, language)}
             </p>
           </div>
           <div className="flex items-center gap-4">
             {lastUpdate && (
               <div className="text-right">
-                <div className="text-sm text-muted-foreground">{t("lastUpdated", language)}</div>
+                <div className="text-sm text-muted-foreground">{t("lastUpdated" as TranslationKey, language)}</div>
                 <div className="text-lg font-mono">{lastUpdate}</div>
               </div>
             )}
+            {/* 刷新按钮 */}
+            <Button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {isRefreshing ? t("refreshing" as TranslationKey, language) : t("refresh" as TranslationKey, language)}
+            </Button>
             {/* 语言切换按钮 */}
             <button
               onClick={toggleLanguage}
@@ -140,43 +173,48 @@ export default function Home() {
         {/* Navigation */}
         <div className="flex gap-8 border-b pb-4">
           <button className="text-sm font-medium border-b-2 border-primary pb-2">
-            {t("liveTab", language)}
+            {t("liveTab" as TranslationKey, language)}
           </button>
         </div>
 
         {/* Crypto Ticker */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           {pricing ? (
             <>
               <CryptoCard
                 symbol="BTC"
-                name={t("bitcoin", language)}
+                name={t("bitcoin" as TranslationKey, language)}
                 price={`$${pricing.btc.current_price.toLocaleString()}`}
               />
               <CryptoCard
                 symbol="ETH"
-                name={t("ethereum", language)}
+                name={t("ethereum" as TranslationKey, language)}
                 price={`$${pricing.eth.current_price.toLocaleString()}`}
               />
               <CryptoCard
                 symbol="SOL"
-                name={t("solana", language)}
+                name={t("solana" as TranslationKey, language)}
                 price={`$${pricing.sol.current_price.toLocaleString()}`}
               />
               <CryptoCard
                 symbol="BNB"
-                name={t("binanceCoin", language)}
+                name={t("binanceCoin" as TranslationKey, language)}
                 price={`$${pricing.bnb.current_price.toLocaleString()}`}
               />
               <CryptoCard
                 symbol="DOGE"
-                name={t("dogecoin", language)}
+                name={t("dogecoin" as TranslationKey, language)}
                 price={`$${pricing.doge.current_price.toFixed(4)}`}
+              />
+              <CryptoCard
+                symbol="XRP"
+                name="瑞波币"
+                price={`$${pricing.xrp.current_price.toFixed(4)}`}
               />
             </>
           ) : (
             // Loading skeleton
-            Array.from({ length: 5 }).map((_, i) => (
+            Array.from({ length: 6 }).map((_, i) => (
               <Card key={i} className="p-4 animate-pulse">
                 <div className="h-20 bg-muted rounded"></div>
               </Card>
@@ -195,18 +233,35 @@ export default function Home() {
               totalCount={totalCount}
               language={language}
             />
+            {/* 调试信息 */}
+            <div className="mt-2 text-xs text-muted-foreground">
+              数据点数量: {metricsData.length}
+              {metricsData.length > 0 && (
+                <>
+                  <br />最后更新: {new Date(metricsData[metricsData.length - 1].createdAt).toLocaleString()}
+                  <br />账户价值: ${metricsData[metricsData.length - 1].totalCashValue?.toFixed(2)}
+                  <br />数据格式检查: {metricsData[metricsData.length - 1].hasOwnProperty('totalCashValue') ? '✓' : '✗'}
+                </>
+              )}
+              <br />有效数据检查: {metricsData.filter(item => item && typeof item.totalCashValue === 'number' && !isNaN(item.totalCashValue) && item.createdAt).length} 条
+            </div>
           </div>
 
-          {/* Right: Models View */}
-          <div className="flex-1">
-            <ModelsView language={language} />
+          {/* Right: Models View and Real-time Info */}
+          <div className="flex-1 flex flex-col gap-6">
+            <div className="flex-1">
+              <ModelsView language={language} />
+            </div>
+            <div className="flex-1">
+              <RealTimeInfo language={language} />
+            </div>
           </div>
         </div>
 
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground pt-8 border-t">
-          <p>{t("highestModel", language)}</p>
-          <p className="mt-2">{t("platformName", language)}</p>
+          <p>{t("highestModel" as TranslationKey, language)}</p>
+          <p className="mt-2">{t("platformName" as TranslationKey, language)}</p>
         </div>
       </div>
     </div>

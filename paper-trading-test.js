@@ -3,8 +3,8 @@ const { HttpProxyAgent } = require('http-proxy-agent');
 
 // 创建Paper Trading配置的Binance实例
 const binance = new ccxt.binance({
-  apiKey: 'LUgIf7D9vqlTVcqHF13TbFY2WeZHsO0Uuycym17wx5Vy2uxdAora8o4PkHbNE7rb',
-  secret: 'fuq93IPY0GatDDNHMg0sqSpOsfHIvteaDA1iHhLNct5GXmgcz2IvSfd01pjq7fG3',
+  apiKey: '5YGE2rAu02nsqAu6uWh5BIdkHxXmZLY1FFafE9W2q1bODUZu1cktB3ebYuuFakd3',
+  secret: 'e71KcVl5HMhDP1rBSBz4kmgCRAsnoNS8bACuHWeN1lArjVnynlJ0r5xWDKnoIYGp',
   hostname: 'testnet.binance.vision',
   options: {
     defaultType: "spot",

@@ -12,6 +12,10 @@ export const translations = {
     // 更新时间
     lastUpdated: "Last updated",
     
+    // 刷新按钮
+    refresh: "Refresh",
+    refreshing: "Refreshing...",
+    
     // 加密货币名称
     bitcoin: "Bitcoin",
     ethereum: "Ethereum",
@@ -32,12 +36,27 @@ export const translations = {
     noCompletedTrades: "No completed trades yet",
     completedTrade: "completed trade",
     completedTrades: "completed trades",
+    loadingPositions: "Loading positions...",
+    noPositions: "No positions",
+    noPositionsDesc: "You don't have any open positions",
+    position: "position",
+    positions: "positions",
+    currentValue: "Current Value",
+    currentPrice: "Current Price",
     
     // 图表面板
     totalAccountValue: "Total Account Value",
     realTimeTracking: "Real-time tracking • Updates every 10s",
     loadingMetrics: "Loading metrics...",
     noMetricsData: "No metrics data available",
+    
+    // 实时信息面板
+    realTimeInfo: "Real-time Info",
+    noDataAvailable: "No data available",
+    totalReturn: "Total Return",
+    availableCash: "Available Cash",
+    positionsValue: "Positions Value",
+    sharpeRatio: "Sharpe Ratio",
     
     // 工具提示
     cashLabel: "Cash:",
@@ -78,6 +97,10 @@ export const translations = {
     // 更新时间
     lastUpdated: "最后更新",
     
+    // 刷新按钮
+    refresh: "刷新",
+    refreshing: "刷新中...",
+    
     // 加密货币名称
     bitcoin: "比特币",
     ethereum: "以太坊",
@@ -98,12 +121,27 @@ export const translations = {
     noCompletedTrades: "暂无已完成交易",
     completedTrade: "笔已完成交易",
     completedTrades: "笔已完成交易",
+    loadingPositions: "加载持仓...",
+    noPositions: "暂无持仓",
+    noPositionsDesc: "您没有任何未平仓头寸",
+    position: "个持仓",
+    positions: "个持仓",
+    currentValue: "当前价值",
+    currentPrice: "当前价格",
     
     // 图表面板
     totalAccountValue: "账户总价值",
     realTimeTracking: "实时跟踪 • 每10秒更新",
     loadingMetrics: "加载指标...",
     noMetricsData: "暂无指标数据",
+    
+    // 实时信息面板
+    realTimeInfo: "实时信息",
+    noDataAvailable: "暂无数据",
+    totalReturn: "总回报率",
+    availableCash: "可用现金",
+    positionsValue: "持仓价值",
+    sharpeRatio: "夏普比率",
     
     // 工具提示
     cashLabel: "现金:",

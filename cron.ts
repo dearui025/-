@@ -47,4 +47,11 @@ cron.schedule("*/3 * * * *", async () => {
   await runChatInterval();
 });
 
-await runChatInterval();
+// 立即执行一次任务以确保初始化
+console.log("Initializing cron tasks...");
+// 移除直接的await调用，改为使用setTimeout确保不会阻塞模块加载
+setTimeout(() => {
+  runChatInterval().catch(console.error);
+}, 1000);
+
+export { runMetricsInterval, runChatInterval };

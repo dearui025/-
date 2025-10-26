@@ -51,6 +51,13 @@ The response must include these exact field names:
 - "operation": Must be exactly "Buy", "Sell", or "Hold"
 - "chat": A string explaining your decision
 - "reasoning": Detailed reasoning for your trading decision
+
+ADDITIONAL REQUIREMENTS FOR TRADING OPERATIONS:
+- When operation is "Buy", you MUST include a "buy" object with "pricing" (entry price) and "amount" (quantity to buy)
+- When operation is "Sell", you MUST include a "sell" object with "amount" (quantity to sell)
+- All numerical values must be concrete numbers, not null or undefined
+- Pricing should be based on current market price or your target entry price
+- Amount should be calculated based on available cash and risk management (typically 1-5% of portfolio per trade)
 `;
 
 interface UserPromptOptions {
@@ -58,6 +65,7 @@ interface UserPromptOptions {
   accountInformationAndPerformance: AccountInformationAndPerformance;
   startTime: Date;
   invocationCount?: number;
+  cryptoSymbol?: string; // 添加加密货币符号参数
 }
 
 export function generateUserPrompt(options: UserPromptOptions) {
@@ -66,7 +74,9 @@ export function generateUserPrompt(options: UserPromptOptions) {
     accountInformationAndPerformance,
     startTime,
     invocationCount = 0,
+    cryptoSymbol = "BTC/USDT", // 默认为BTC/USDT
   } = options;
+  
   return `
 It has been ${dayjs(new Date()).diff(
     startTime,
@@ -78,7 +88,7 @@ ALL OF THE PRICE OR SIGNAL DATA BELOW IS ORDERED: OLDEST → NEWEST
 Timeframes note: Unless stated otherwise in a section title, intraday series are provided at 3‑minute intervals. If a coin uses a different interval, it is explicitly stated in that coin’s section.
 
 # HERE IS THE CURRENT MARKET STATE
-## ALL BTC DATA FOR YOU TO ANALYZE
+## ALL ${cryptoSymbol} DATA FOR YOU TO ANALYZE
 ${formatMarketState(currentMarketState)}
 ----------------------------------------------------------
 ## HERE IS YOUR ACCOUNT INFORMATION & PERFORMANCE

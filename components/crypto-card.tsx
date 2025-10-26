@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { AnimatedNumber } from "@/components/animated-number";
-import { SiBitcoin, SiEthereum, SiBinance, SiDogecoin } from "react-icons/si";
+import { SiBitcoin, SiEthereum, SiBinance, SiDogecoin, SiXrp } from "react-icons/si";
 import { TbCurrencySolana } from "react-icons/tb";
 
 interface CryptoCardProps {
@@ -18,6 +18,7 @@ const iconMap = {
   SOL: TbCurrencySolana,
   BNB: SiBinance,
   DOGE: SiDogecoin,
+  XRP: SiXrp,
 };
 
 const colorMap = {
@@ -26,6 +27,7 @@ const colorMap = {
   SOL: "text-purple-500",
   BNB: "text-yellow-500",
   DOGE: "text-amber-500",
+  XRP: "text-gray-500",
 };
 
 export function CryptoCard({ symbol, name, price, change }: CryptoCardProps) {
