@@ -1,5 +1,5 @@
 import ccxt from "ccxt";
-import { HttpProxyAgent } from 'http-proxy-agent';
+// import { HttpProxyAgent } from 'http-proxy-agent';
 
 // 创建Binance实例
 export const binance = new ccxt.binance({
@@ -12,8 +12,8 @@ export const binance = new ccxt.binance({
     recvWindow: 60000, // 增加接收窗口到60秒
     timeout: 30000, // 增加超时时间到30秒
   },
-  // 配置代理
-  agent: new HttpProxyAgent('http://127.0.0.1:7890'),
+  // 移除代理配置以避免构建错误
+  // agent: new HttpProxyAgent('http://127.0.0.1:7890'),
   // 添加额外的时间调整
   enableRateLimit: true, // 启用速率限制
 });

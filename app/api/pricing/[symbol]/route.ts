@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import ccxt from "ccxt";
-import { HttpProxyAgent } from 'http-proxy-agent';
+// import { HttpProxyAgent } from 'http-proxy-agent';
 
-export const GET = async (
+export async function GET(
   request: NextRequest,
-  { params }: { params: { symbol: string } }
-) => {
+  context: { params: Promise<{ symbol: string }> }
+) {
   try {
+    const params = await context.params;
     const { symbol } = params;
     
     // 创建不使用API密钥的Binance实例（仅用于获取市场数据）
@@ -18,8 +19,8 @@ export const GET = async (
         recvWindow: 60000, // 增加接收窗口到60秒
         timeout: 30000, // 增加超时时间到30秒
       },
-      // 配置代理
-      agent: new HttpProxyAgent('http://127.0.0.1:7890'),
+      // 移除代理配置以避免构建错误
+      // agent: new HttpProxyAgent('http://127.0.0.1:7890'),
       // 添加额外的时间调整
       enableRateLimit: true, // 启用速率限制
     });
@@ -37,15 +38,15 @@ export const GET = async (
       success: true,
       data: {
         symbol: normalizedSymbol,
-        price: ticker.last,
+        price: ticker.last as unknown as number,
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error: any) {
-    console.error(`Error fetching price for ${params.symbol}:`, error);
+  } catch (error: unknown) {
+    console.error(`Error fetching price for symbol:`, error);
     return NextResponse.json({
       success: false,
-      error: error.message,
+      error: (error as Error).message as string,
     }, { status: 500 });
   }
 };
