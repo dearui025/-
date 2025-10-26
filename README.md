@@ -244,6 +244,26 @@ To deploy this project to Supabase:
    - You can deploy to Vercel, Netlify, or other platforms that support Next.js
    - Make sure to set the environment variables in your deployment platform
 
+## ☁️ Deploying to Your Specific Supabase Project (tvlmjlfgadvlletfxjwr)
+
+Since you've already created a Supabase project with the ID `tvlmjlfgadvlletfxjwr`, you can deploy directly to it:
+
+1. **Configure your environment variables**
+   - Create a `.env.production` file based on `.env.supabase`
+   - Update all the placeholder values with your actual credentials
+
+2. **Run the deployment script**
+   ```bash
+   node deploy-to-supabase.js
+   ```
+
+3. **Follow the prompts to complete the deployment**
+
+4. **Set up cron jobs**
+   You'll need to set up external cron jobs to call these endpoints:
+   - `POST /api/cron/20-seconds-metrics-interval` - Collect metrics every 20 seconds
+   - `POST /api/cron/3-minutes-run-interval` - Execute trading logic every 3 minutes
+
 ## ⚠️ Disclaimer
 
 **This is educational/research software. Trading cryptocurrencies involves substantial risk of loss.**
