@@ -86,11 +86,11 @@ export async function getAccountInformationAndPerformance(
               symbol: positionMap[symbol].symbol,
               amount: positionMap[symbol].amount,
               avgPrice: positionMap[symbol].avgPrice,
-              currentPrice: currentPrice,
-              value: positionMap[symbol].amount * currentPrice
+              currentPrice: currentPrice ?? 0,
+              value: positionMap[symbol].amount * (currentPrice ?? 0)
             });
             
-            currentPositionsValue += positionMap[symbol].amount * currentPrice;
+            currentPositionsValue += positionMap[symbol].amount * (currentPrice ?? 0);
           } catch (priceError) {
             console.error(`获取 ${symbol} 价格时出错:`, priceError);
             // 如果获取价格失败，使用平均价格
@@ -98,7 +98,7 @@ export async function getAccountInformationAndPerformance(
               symbol: positionMap[symbol].symbol,
               amount: positionMap[symbol].amount,
               avgPrice: positionMap[symbol].avgPrice,
-              currentPrice: positionMap[symbol].avgPrice,
+              currentPrice: 0,
               value: positionMap[symbol].amount * positionMap[symbol].avgPrice
             });
             
