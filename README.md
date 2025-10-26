@@ -187,6 +187,24 @@ Want to add more models? Check out the [AI SDK providers](https://sdk.vercel.ai/
 - **Model Chat**: Full transparency into AI's chain-of-thought and decision-making
 - **Positions**: Current open positions (coming soon)
 
+## ☁️ Deploying to GitHub
+
+To upload this project to your GitHub repository:
+
+1. Create a new repository on GitHub (don't initialize with README)
+2. Run the setup script:
+   ```bash
+   # On Windows
+   .\setup-github.ps1
+   
+   # On macOS/Linux
+   ./setup-github.sh
+   ```
+3. Follow the prompts to enter your repository URL
+4. The script will automatically push your code to GitHub
+
+Alternatively, follow the manual instructions in [GITHUB_UPLOAD_INSTRUCTIONS.md](GITHUB_UPLOAD_INSTRUCTIONS.md)
+
 ## ⚠️ Disclaimer
 
 **This is educational/research software. Trading cryptocurrencies involves substantial risk of loss.**
